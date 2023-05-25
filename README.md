@@ -3,45 +3,82 @@ A grpc demo
 
 安装gRPC和Protobuf
 •	go get github.com/golang/protobuf/proto
+
 •	go get google.golang.org/grpc（无法使用，用如下命令代替）
+
 o	git clone https://github.com/grpc/grpc-go.git $GOPATH/src/google.golang.org/grpc
+
 o	git clone https://github.com/golang/net.git $GOPATH/src/golang.org/x/net
+
 o	git clone https://github.com/golang/text.git $GOPATH/src/golang.org/x/text
+
 o	go get -u github.com/golang/protobuf/{proto,protoc-gen-go}
+
 o	git clone https://github.com/google/go-genproto.git $GOPATH/src/google.golang.org/genproto
+
 o	cd $GOPATH/src/
+
 o	go install google.golang.org/grpc
+
 •	go get github.com/golang/protobuf/protoc-gen-go
+
 •	上面安装好后，会在GOPATH/bin下生成protoc-gen-go.exe
-•	但还需要一个protoc.exe，windows平台编译受限，很难自己手动编译，直接去网站下载一个，地址：https://github.com/protocolbuffers/protobuf/releases/tag/v3.9.0 ，同样放在GOPATH/bin下
+
+•	但还需要一个protoc.exe，windows平台编译受限，很难自己手动编译，直接去网站下载一个，地址：
+
+https://github.com/protocolbuffers/protobuf/releases/tag/v3.9.0 ，同样放在GOPATH/bin下
 网上一般都是这么写，有坑。
+
 1、执行$ go get github.com/golang/protobuf/proto
+
 提示：
+
 go: module github.com/golang/protobuf is deprecated: Use the "google.golang.org/protobuf" module instead.
+
 所以应该执行：
+
 go get google.golang.org/protobuf
+
 2、有vpn的情况可以直接执行：
+
 go get google.golang.org/grpc
+
 不用上面那么多clone,clone只是无法直接下载的情况执行的
+
 3、执行：
+
 go install google.golang.org/grpc
+
 4、	执行：
+
 go get github.com/golang/protobuf/protoc-gen-go
+
 5、	执行：
+
 go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
+
 假设目录结构是这样子的：
+
  
 那么protoc编译proto文件成grpc的命令应该是：
+
 cd 项目根目录，也就是hello和proto所在的目录
+
 protoc -I . --go_out=. --go-grpc_out=. proto/hello/hello.proto
+
 网上说的:
+
 protoc -I . --go_out=. hello.proto
+
 都只会生成pb.go,会确实hello_grpc.pb.go，是不完整的代码
+
 还有定义helloService应该是
+
 type helloService struct {
     pb.UnimplementedHelloServer
 }
 而不是：
+
 type helloService struct {
 }
 不然编辑器会提示
@@ -49,10 +86,15 @@ type helloService struct {
 
 
 Tls认证的坑
+
 生成私钥
+
 openssl req -newkey rsa:2048 -nodes -keyout server.key -out server.csr
+
 生成证书
+
 openssl x509 -req -sha256 -days 365 -in server.csr -signkey server.key -out server.crt
+
 
 tlsConfig := &tls.Config{
         InsecureSkipVerify: true,
